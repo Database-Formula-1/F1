@@ -81,3 +81,17 @@ pre#output-json {
     max-height: 300px;
     overflow-y: auto;
 }
+
+@media (max-width: 600px) {
+    .pilota-box fieldset {
+        flex-wrap: wrap; /* ✅ consenti il ritorno a capo */
+    }
+
+    .pilota-box label {
+        width: 100%; /* ✅ ogni campo su riga propria */
+    }
+
+        .pilota-box label:nth-last-child(-n+3) {
+            width: auto; /* le checkbox possono restare più compatte */
+        }
+}

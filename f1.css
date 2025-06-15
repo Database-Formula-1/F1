@@ -12,20 +12,37 @@ html, body {
 }
 
 /* HEADER + NAV */
-header {
-    height: 4rem; /* fissa altezza */
-    background-color: #202020;
-    padding: 1rem; /* se vuoi, oppure togli per adattare */
+#site-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    background-color: #202020;
+    padding: 1rem;
+    height: 4rem;
     box-sizing: border-box;
 }
 
+/* Logo + titolo insieme */
+.header-left {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Logo */
+.logo {
+    height: 3rem;
+}
+
+/* Titolo */
 h1 {
     font-size: 1.5rem;
     color: #e10600;
+    white-space: nowrap; /* ❗ forza una sola riga */
+    margin-left: 5rem;
 }
+
+
 
 nav {
     position: relative;
@@ -96,7 +113,7 @@ footer {
         display: none;
         flex-direction: column;
         position: absolute;
-        top: 3rem;
+        top: 1rem;
         right: 0;
         background-color: #202020;
         padding: 0.5rem;
@@ -109,4 +126,19 @@ footer {
         #nav-buttons button {
             width: 100%;
         }
+    h1 {
+        display: none; /* Nascondi titolo su mobile per risparmiare spazio */
+    }
+    .logo {
+        transform: translateX(33.3vw);
+    }
+    footer {
+        height: 1.5rem;
+        padding: 0;
+        line-height: 1.5rem; /* per centrare testo verticalmente */   
+    }
+    main {
+        padding-bottom: 1.5rem;
+        height: calc(100vh - 4rem - 1.5rem);
+    }
 }

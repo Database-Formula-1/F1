@@ -13,13 +13,13 @@ document.addEventListener("DOMContentLoaded", () => {
         { label: "Anno", action: mostraMenuGare }
     ];
 
-    // Crea dinamicamente i pulsanti
     buttons.forEach(({ label, action }) => {
         const btn = document.createElement("button");
         btn.textContent = label;
         btn.addEventListener("click", () => {
             main.innerHTML = "";
             action();
+            navButtons.classList.remove("show"); // Chiudi menu hamburger
         });
         navButtons.appendChild(btn);
     });
@@ -27,6 +27,15 @@ document.addEventListener("DOMContentLoaded", () => {
     // Menu hamburger toggle
     menuToggle.addEventListener("click", () => {
         navButtons.classList.toggle("show");
+    });
+
+    // Chiudi hamburger cliccando fuori
+    document.addEventListener("click", (e) => {
+        const isClickInsideMenu = navButtons.contains(e.target);
+        const isClickOnToggle = menuToggle.contains(e.target);
+        if (!isClickInsideMenu && !isClickOnToggle) {
+            navButtons.classList.remove("show");
+        }
     });
 
     // Placeholder

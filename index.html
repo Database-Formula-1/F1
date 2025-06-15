@@ -14,13 +14,15 @@
 
         <header id="site-header">
             <div class="header-left">
-                <h1>  <img src="img/logo.png" alt="Logo" style="height: 3.5rem; vertical-align: middle; padding-right: 3rem;">DATABASE FORMULA 1</h1>
+                <img src="img/logo.png" alt="Logo" class="logo">
+                <h1>DATABASE FORMULA 1</h1>
             </div>
+
             <div class="header-right">
                 <button id="menu-toggle" aria-label="Toggle menu">☰</button>
                 <nav id="main-nav">
                     <ul id="nav-buttons">
-                        <!-- I pulsanti dinamici vengono creati qui da JS -->
+                        <!-- Pulsanti dinamici -->
                     </ul>
                 </nav>
             </div>
@@ -41,5 +43,12 @@
     <script src="creaGara.js"></script>
     <script src="tabelle.js"></script>
     <script src="gare.js"></script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            mostraClassifiche();
+        });
+    </script>
+
 </body>
 </html>
