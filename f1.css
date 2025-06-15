@@ -102,6 +102,52 @@ footer {
     z-index: 100;
 }
 
+.nav-button.has-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-menu {
+    position: absolute;
+    top: calc(100% + 6px); /* 6px di margine sopra */
+    left: 100px; /* sposta a destra di 10px rispetto al bordo sinistro del bottone */
+    background-color: #202020;
+    padding: 0.5rem 0.5rem;
+    border-radius: 5px;
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    min-width: 60px;
+    box-shadow: 0 0 12px #ff6666;
+    z-index: 1000;
+    gap: 1rem;
+}
+
+
+    .dropdown-menu.hidden {
+        display: none;
+    }
+
+
+.dropdown-item {
+    padding: 0.5rem;
+    background-color: transparent;
+    color: white;
+    border: none;
+    text-align: center;
+    cursor: pointer;
+    border-radius: 5px; /* come i bottoni */
+    transition: background-color 0.3s ease;
+}
+
+    .dropdown-item:hover {
+        background-color: #ff6666;
+        box-shadow: none;
+        color: white;
+    }
+
+
+
 
 /* RESPONSIVE */
 @media (max-width: 600px) {
@@ -117,6 +163,7 @@ footer {
         right: 0;
         background-color: #202020;
         padding: 0.5rem;
+        box-shadow: 0 0 12px #ff6666;
     }
 
         #nav-buttons.show {
@@ -140,5 +187,17 @@ footer {
     main {
         padding-bottom: 1.5rem;
         height: calc(100vh - 4rem - 1.5rem);
+    }
+    .nav-button.has-dropdown {
+        position: relative;
+    }
+    .dropdown-menu {
+        top: 50px;
+        bottom: auto;
+        right: 100%;
+        left: auto;
+        margin-top: 0;
+        margin-right: 6px;
+        transform: translateY(0); /* evita slittamenti inutili */
     }
 }
