@@ -116,7 +116,7 @@ footer {
     border-radius: 5px;
     display: flex;
     flex-direction: column;
-    width: 100%;
+    width: 50%;
     min-width: 60px;
     box-shadow: 0 0 12px #ff6666;
     z-index: 1000;
@@ -150,7 +150,7 @@ footer {
 
 
 /* RESPONSIVE */
-@media (max-width: 600px) {
+@media (max-width: 800px) {
     #menu-toggle {
         display: block;
     }
@@ -196,6 +196,7 @@ footer {
         bottom: auto;
         right: 100%;
         left: auto;
+        width: 100%;
         margin-top: 0;
         margin-right: 6px;
         transform: translateY(0); /* evita slittamenti inutili */

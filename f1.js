@@ -36,8 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
         },
         { label: "Piloti", action: () => mostraMessaggio("Piloti") },
         { label: "Scuderie", action: () => mostraMessaggio("Scuderie") },
-        { label: "Gare", action: () => mostraMessaggio("Gare") },
-        { label: "Anno", action: mostraMenuGare }
+        { label: "Gare", action: mostraMenuGare }
     ];
 
     function clearMainAndRun(fn) {

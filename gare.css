@@ -1,4 +1,14 @@
-﻿main select {
+﻿.custom-select-container,
+.custom-select-selected,
+.custom-select-items,
+.custom-select-items div {
+    font-family: sans-serif; /* oppure: Arial, Helvetica, sans-serif */
+    font-size: 1rem;
+    color: white;
+    font-size: 0.8rem; 
+}
+
+main select {
     margin: 1rem;
     padding: 0.5rem 1rem;
     font-size: 1rem;
@@ -6,4 +16,113 @@
     border: 1px solid #999;
     background-color: #1a1a1a;
     color: #f1f1f1;
+}
+
+/* Evidenziazione podi e zona punti */
+.podio-oro {
+    box-shadow: inset 0 0 10px rgba(255, 215, 0, 0.7);
+    font-weight: bold;
+    color: white;
+    background-color: rgba(255, 215, 0, 0.0); /* oro tenue */
+}
+
+.podio-argento {
+    box-shadow: inset 0 0 10px rgba(220, 220, 220, 0.7);
+    font-weight: bold;
+    color: white;
+    background-color: rgba(220, 220, 220, 0.0);
+}
+
+.podio-bronzo {
+    box-shadow: inset 0 0 10px rgba(205, 127, 50, 0.7);
+    font-weight: bold;
+    color: white;
+    background-color: rgba(205, 127, 50, 0.0);
+}
+
+.punti-f1 {
+    box-shadow: inset 0 0 10px rgba(80, 161, 226, 0.7); /* azzurro tenue */
+    font-weight: bold;
+    color: white;
+    background-color: rgba(80, 161, 226, 0.0);
+}
+
+.q3 {
+    box-shadow: inset 0 0 10px rgba(129, 16, 222, 0.7); /* azzurro tenue */
+    font-weight: bold;
+    color: white;
+    background-color: rgba(80, 161, 226, 0.0);
+}
+
+.q2 {
+    box-shadow: inset 0 0 10px rgba(80, 161, 226, 0.7); /* azzurro tenue */
+    font-weight: bold;
+    color: white;
+    background-color: rgba(80, 161, 226, 0.0);
+}
+
+.container-select {
+    display: flex;
+    gap: 1rem;
+    flex-wrap: wrap; /* opzionale: se su schermo piccolo va a capo */
+    margin-bottom: 1.5rem;
+}
+
+/* Ogni menu custom */
+.custom-select-container {
+    position: relative;
+    user-select: none;
+    width: 200px;
+}
+
+/* Parte visibile del menu */
+.custom-select-selected {
+    background-color: #1a1a1a;
+    color: white;
+    padding: 0.5rem 1rem;
+    border: 1px solid #999;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* Dropdown menu */
+.custom-select-items {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background-color: #1a1a1a;
+    border: 1px solid #999;
+    border-top: none;
+    z-index: 10;
+    max-height: 200px;
+    overflow-y: auto;
+    border-radius: 0 0 6px 6px;
+}
+
+    .custom-select-items div {
+        padding: 0.5rem 1rem;
+        cursor: pointer;
+    }
+
+        .custom-select-items div:hover {
+            background-color: #c00;
+            color: white;
+        }
+
+/* Nascondi menu */
+.custom-select-hide {
+    display: none;
+}
+
+@media (max-width: 800px) {
+    .container-select {
+        flex-direction: column;
+        gap: 0.5rem; /* magari meno spazio verticale */
+        align-items: stretch; /* fa sì che i menu occupino tutta la larghezza disponibile */
+    }
+
+    .custom-select-container {
+        width: 100%; /* così ogni menu occupa tutta la larghezza */
+    }
 }
