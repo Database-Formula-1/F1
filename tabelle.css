@@ -1,0 +1,51 @@
+﻿.tabella-classifica {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: #1a1a1a;
+    color: #f1f1f1;
+    box-shadow: 0 0 10px #ff0000;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+    .tabella-classifica th,
+    .tabella-classifica td {
+        padding: 0.5rem 0.75rem;
+        text-align: center;
+        border-bottom: 1px solid #333;
+    }
+
+    .tabella-classifica thead {
+        background-color: #ff0000;
+        color: #fff;
+    }
+
+    .tabella-classifica tbody tr:hover {
+        position: relative;
+        z-index: 2;
+        background-color: #ff5555;
+        box-shadow: 0 0 12px #ff5555;
+    }
+
+    .tabella-classifica tbody tr:nth-child(even):hover {
+        background-color: #aa1515; /* hover più scuro e meno trasparente per righe chiare */
+        box-shadow: 0 0 12px #aa1515;
+    }
+
+
+    .tabella-classifica tbody tr:nth-child(even) {
+        background-color: #252525;
+    }
+
+/* 📱 Responsive: schermi piccoli */
+@media (max-width: 600px) {
+    .tabella-classifica th,
+    .tabella-classifica td {
+        padding: 0.4rem 0.5rem;  /* meno padding */
+        font-size: 0.8rem;       /* font più piccolo */
+    }
+
+    .tabella-classifica {
+        font-size: 0.85rem;
+    }
+}

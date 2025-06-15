@@ -1,0 +1,83 @@
+﻿#crea-gara-form {
+    background: #1a1a1a;
+    padding: 2rem;
+    color: #f1f1f1;
+    border-radius: 12px;
+    box-shadow: 0 0 10px #ff0000aa;
+}
+
+    #crea-gara-form h2, #crea-gara-form h3 {
+        color: #ff2d2d;
+    }
+
+label {
+    margin-right: 2rem;
+}
+#is-sprint-checkbox{
+    margin-left: 2rem;
+}
+.pilota-box {
+    margin-bottom: 1rem;
+    padding: 0.1rem;
+    background: #2a2a2a;
+    border-left: 4px solid #ff4444;
+    border-radius: 8px;
+}
+
+    .pilota-box fieldset {
+        border: none;
+        display: flex;
+        flex-wrap: nowrap; /* Non andare a capo */
+        gap: 0.5rem;
+        align-items: center;
+    }
+
+    .pilota-box label {
+        flex: 0 0 auto; /* non si allunga, dimensione fissa */
+        display: flex;
+        flex-direction: column;
+        font-size: 0.8rem; /* un po' più piccolo */
+        width: 110px; /* larghezza fissa più stretta */
+        margin: 0; /* togli margini verticali */
+    }
+
+        .pilota-box label input[type="text"],
+        .pilota-box label input[type="number"] {
+            font-size: 0.8rem;
+            padding: 2px 5px;
+            height: 24px;
+        }
+
+        .pilota-box label input[type="checkbox"] {
+            margin-right: 4px;
+            transform: scale(0.9);
+            vertical-align: middle;
+        }
+
+        .pilota-box label:nth-last-child(-n+3) { /* le 3 checkbox */
+            flex-direction: row;
+            align-items: center;
+            width: auto; /* larghezza automatica per le checkbox */
+            font-size: 0.75rem;
+        }
+
+
+button#genera-json {
+    background-color: #ff1e1e;
+    color: white;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    margin-top: 1rem;
+}
+
+pre#output-json {
+    background: #111;
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 0.9rem;
+    white-space: pre-wrap;
+    max-height: 300px;
+    overflow-y: auto;
+}
