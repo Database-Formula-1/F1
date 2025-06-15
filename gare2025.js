@@ -616,7 +616,7 @@ const gare2025 = [
                 "nome": "George Russell",
                 "scuderia": "Mercedes",
                 "q1": "1:27.843",
-                "q2": "1:7.400",
+                "q2": "1:27.400",
                 "q3": "1:27.318",
                 "posizioneQualifica": 5,
                 "posizioneFinale": 5,
