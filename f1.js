@@ -25,7 +25,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     // Pulsanti da creare, "Classifiche" avrà sotto-menu
     const buttons = [
-        { label: "Crea Gara", action: creaFormGara },
         {
             label: "Classifiche",
             action: null, // non fa nulla al click perché ha un dropdown
@@ -34,9 +33,11 @@ document.addEventListener("DOMContentLoaded", () => {
                 { label: "Scuderie", action: mostraClassificaScuderieSingola }
             ]
         },
+        { label: "Gare disputate", action: mostraMenuGare },
         { label: "Piloti", action: () => mostraMessaggio("Piloti") },
         { label: "Scuderie", action: () => mostraMessaggio("Scuderie") },
-        { label: "Gare", action: mostraMenuGare }
+        { label: "Crea Gara", action: creaFormGara },
+       
     ];
 
     function clearMainAndRun(fn) {

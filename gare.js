@@ -4,6 +4,14 @@ const databaseGare = {
     // 2024: gare2024,
 };
 
+function hexToRgba(rgbString, alpha) {
+    // rgbString esempio: "rgb(255,128,0)"
+    const nums = rgbString.match(/\d+/g);
+    if (!nums || nums.length < 3) return rgbString;
+    const [r, g, b] = nums;
+    return `rgba(${r},${g},${b},${alpha})`;
+}
+
 let selectModalita, selectTracciato; // rese globali per essere usate in altre funzioni
 
 function creaCustomSelect(opzioni, placeholder, onSelectCallback) {
@@ -231,11 +239,12 @@ function mostraMenuGare() {
         const gare = databaseGare[anno] || [];
         const nuoviTracciati = gare.map(g => g.gara);
 
-        // Creo un nuovo select tracciati con le nuove opzioni
         const nuovoSelectTracciato = creaCustomSelect(nuoviTracciati, "Scegli Gara", (tracciato) => {
             tracciatoSelezionato = tracciato;
-            console.log("Tracciato selezionato:", tracciato);
-            // Se vuoi aggiornare altro, fallo qui
+            const gara = databaseGare[anno].find(g => g.gara === tracciato);
+            if (gara) {
+                mostraDatiGara(gara);
+            }
         });
 
         // Sostituisco il vecchio select tracciato con il nuovo
@@ -246,6 +255,272 @@ function mostraMenuGare() {
     // Avvio iniziale con valori di default
     aggiornaTracciati(annoSelezionato);
     mostraTabellaRiassuntiva(annoSelezionato, modalitaSelezionata);
+}
+
+let statoOrdine = {};  // salva l’ordine corrente per ogni colonna
+
+function ordinaTabella(tabella, colIndex) {
+    const tbody = tabella.querySelector("tbody");
+    const righe = Array.from(tbody.querySelectorAll("tr"));
+
+    const header = tabella.querySelector("thead") || tabella.querySelector("tr");
+    const ths = header.querySelectorAll("th");
+
+    // Toggle ordine: crescente <-> decrescente
+    statoOrdine[colIndex] = !statoOrdine[colIndex];
+    const ordineCrescente = statoOrdine[colIndex];
+
+    // Rileva se è un tempo
+    const isTempo = righe.some(riga => {
+        const val = riga.children[colIndex].textContent.trim();
+        return /^\d+:\d{2}\.\d{3}$/.test(val);
+    });
+
+    // Rileva se è numerico (ma non tempo)
+const isNumeric = !isTempo && righe.some(riga => {
+    const val = riga.children[colIndex].textContent.trim();
+    return /^\d+$/.test(val); // almeno un valore intero
+});
+
+
+    righe.sort((a, b) => {
+        let valA = a.children[colIndex].textContent.trim();
+        let valB = b.children[colIndex].textContent.trim();
+
+        if (isTempo) {
+            const secA = tempoStrToSec(valA);
+            const secB = tempoStrToSec(valB);
+            if (secA === null) return 1;
+            if (secB === null) return -1;
+            return ordineCrescente ? secA - secB : secB - secA;
+        }
+
+        if (isNumeric) {
+            const numA = parseInt(valA, 10);
+            const numB = parseInt(valB, 10);
+
+            const isValidA = !isNaN(numA);
+            const isValidB = !isNaN(numB);
+
+            if (!isValidA && !isValidB) return 0;
+            if (!isValidA) return 1;
+            if (!isValidB) return -1;
+
+            return ordineCrescente ? numA - numB : numB - numA;
+        }
+
+
+        // Ordina stringhe (alfabetico)
+        return ordineCrescente ? valA.localeCompare(valB) : valB.localeCompare(valA);
+    });
+
+    tbody.innerHTML = "";
+    righe.forEach(riga => tbody.appendChild(riga));
+}
+
+function colorScale(value, modalita = "verde") {
+    if (value < 0) value = 0;
+    if (value > 1) value = 1;
+
+    if (value <= 0.5) {
+        const ratio = value / 0.5;
+        const r = 255;
+        const g = Math.round(255 * ratio);
+        const b = Math.round(255 * ratio);
+        return `rgb(${r},${g},${b})`; // rosso → bianco
+    } else {
+        const ratio = (value - 0.5) / 0.5;
+        const r = Math.round(255 * (1 - ratio));
+        const g = Math.round(255 - (127 * ratio)); // bianco → verde/blu
+        let b;
+        if (modalita === "verde") {
+            b = Math.round(255 * (1 - ratio)); // bianco → verde
+        } else if (modalita === "blu") {
+            b = Math.round(255 * ratio); // bianco → blu
+        } else {
+            b = Math.round(255 * (1 - ratio)); // default fallback
+        }
+        return `rgb(${r},${g},${b})`;
+    }
+}
+
+// Funzione per convertire una stringa tempo "m:ss.xxx" o "mm:ss.xxx" in millisecondi
+function tempoInMs(tempoStr) {
+    if (typeof tempoStr !== "string") return NaN;
+    const parti = tempoStr.split(":");
+    if (parti.length !== 2) return NaN;
+    const minuti = parseInt(parti[0], 10);
+    const secondi = parseFloat(parti[1]);
+    if (isNaN(minuti) || isNaN(secondi)) return NaN;
+    return minuti * 60000 + Math.round(secondi * 1000);
+}
+
+function creaScaler(valori, inverti = false) {
+    const min = Math.min(...valori);
+    const max = Math.max(...valori);
+    return function (val) {
+        if (max === min) return 0;
+        let norm = (val - min) / (max - min);
+        return inverti ? 1 - norm : norm;
+    };
+}
+
+function mostraDatiGara(gara) {
+    const containerTabella = document.getElementById("container-tabella");
+    containerTabella.innerHTML = "";
+
+    const container = document.createElement("div");
+    container.classList.add("container-tabella");
+
+    const tabella = document.createElement("table");
+    tabella.classList.add("tabella-classifica");
+
+    // Crea thead
+    const thead = document.createElement("thead");
+    const headerRow = document.createElement("tr");
+    const colonne = ["Pilota", "Partenza", "Arrivo", "Q1", "Q2", "Q3"];
+    colonne.forEach(testo => {
+        const th = document.createElement("th");
+        th.textContent = testo;
+        headerRow.appendChild(th);
+    });
+    thead.appendChild(headerRow);
+    tabella.appendChild(thead);
+
+    const keys = ["nome", "posizioneQualifica", "posizioneFinale", "q1", "q2", "q3"];
+    const colNumeriche = [1, 2, 3, 4, 5]; // colonne da colorare
+
+    // Creo gli scaler per ogni colonna numerica
+    const scalerPerCol = {};
+    colNumeriche.forEach(colIndex => {
+        const key = keys[colIndex];
+        let valoriDaScalare;
+        if (["q1", "q2", "q3"].includes(key)) {
+            valoriDaScalare = gara.piloti.map(p => tempoInMs(p[key])).filter(v => !isNaN(v));
+        } else {
+            valoriDaScalare = gara.piloti.map(p => p[key]).filter(v => typeof v === "number" && !isNaN(v));
+        }
+        scalerPerCol[colIndex] = creaScaler(valoriDaScalare, true); // inverti per verde = migliore (minore)
+    });
+
+    // Crea tbody
+    const tbody = document.createElement("tbody");
+    gara.piloti.forEach(pilota => {
+        const row = document.createElement("tr");
+
+        // Cellula Pilota colorata
+        const colori = pilotiColori[pilota.nome] || ["transparent", "transparent"];
+        const cellaPilota = document.createElement("td");
+        cellaPilota.style.boxShadow = `inset -5px -5px 8px ${colori[1]}, inset 5px 5px 8px ${colori[0]}`;
+        cellaPilota.textContent = pilota.nome;
+        row.appendChild(cellaPilota);
+
+        // Celle con colorazione gradiente
+        colNumeriche.forEach(colIndex => {
+            const td = document.createElement("td");
+            const key = keys[colIndex];
+            const val = pilota[key];
+            td.textContent = val;
+
+            if (val !== null && val !== undefined && val !== "") {
+                let normVal;
+                if (["q1", "q2", "q3"].includes(key)) {
+                    const valMs = tempoInMs(val);
+                    if (!isNaN(valMs)) {
+                        normVal = scalerPerCol[colIndex](valMs);
+                    }
+                } else if (typeof val === "number" && !isNaN(val)) {
+                    normVal = scalerPerCol[colIndex](val);
+                }
+
+                if (normVal !== undefined) {
+                    const coloreChiaro = colorScale(normVal, "verde");
+                    td.style.backgroundColor = "transparent";
+
+                    td.style.boxShadow = `
+                inset -5px -5px 10px ${hexToRgba(coloreChiaro, 0.7)},
+                inset 5px 5px 10px ${hexToRgba(coloreChiaro, 0.3)}
+            `;
+                }
+            }
+
+            row.appendChild(td);
+        });
+
+
+        tbody.appendChild(row);
+    });
+
+    tabella.appendChild(tbody);
+
+    // Crea tfoot duplicando header
+    const tfoot = document.createElement("tfoot");
+    const footerRow = headerRow.cloneNode(true);
+    tfoot.appendChild(footerRow);
+    tabella.appendChild(tfoot);
+
+    container.appendChild(tabella);
+    containerTabella.appendChild(container);
+
+    // Aggiungi ordinamento e ordina subito per "Arrivo"
+    aggiungiOrdinamentoTabella(tabella);
+    ordinaTabella(tabella, 2, true);
+}
+
+
+
+
+// Funzione per aggiungere il click sulle intestazioni e ordinare la tabella
+let colonnaOrdinata = null;
+let ordineCrescente = true;
+
+function aggiungiOrdinamentoTabella(tabella) {
+    const headers = tabella.querySelectorAll("th");
+    headers.forEach((th, index) => {
+        th.style.cursor = "pointer";
+        th.addEventListener("click", () => {
+            if (colonnaOrdinata === index) {
+                // Stessa colonna, inverti ordine
+                ordineCrescente = !ordineCrescente;
+            } else {
+                // Nuova colonna, ordine crescente di default
+                colonnaOrdinata = index;
+                ordineCrescente = true;
+            }
+            ordinaTabella(tabella, index, ordineCrescente);
+        });
+    });
+}
+
+
+// Funzione di ordinamento tabella (toggle crescente/decrescente)
+function ordinaTabella(tabella, colonnaIndex, crescente = false) {
+    const tbody = tabella.querySelector("tbody");
+    const rows = Array.from(tbody.querySelectorAll("tr"));
+
+    function valoreOrdinamento(text, colIndex) {
+        if (colIndex === 1 || colIndex === 2) {
+            const n = parseInt(text);
+            return isNaN(n) ? (crescente ? Number.MAX_SAFE_INTEGER : Number.MIN_SAFE_INTEGER) : n;
+        } else if (colIndex >= 3) {
+            const sec = tempoStrToSec(text);
+            return sec === null ? (crescente ? Number.MAX_SAFE_INTEGER : Number.MIN_SAFE_INTEGER) : sec;
+        }
+        return text.toLowerCase();
+    }
+
+    rows.sort((a, b) => {
+        const valA = valoreOrdinamento(a.cells[colonnaIndex].textContent, colonnaIndex);
+        const valB = valoreOrdinamento(b.cells[colonnaIndex].textContent, colonnaIndex);
+
+        if (valA < valB) return crescente ? -1 : 1;
+        if (valA > valB) return crescente ? 1 : -1;
+        return 0;
+    });
+
+    tbody.innerHTML = "";
+
+    rows.forEach(r => tbody.appendChild(r));
 }
 
 

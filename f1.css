@@ -109,8 +109,8 @@ footer {
 
 .dropdown-menu {
     position: absolute;
-    top: calc(100% + 6px); /* 6px di margine sopra */
-    left: 100px; /* sposta a destra di 10px rispetto al bordo sinistro del bottone */
+    top: calc(100% + 10px); /* 6px di margine sopra */
+    left: -80px; /* sposta a destra di 10px rispetto al bordo sinistro del bottone */
     background-color: #202020;
     padding: 0.5rem 0.5rem;
     border-radius: 5px;
@@ -169,7 +169,7 @@ footer {
         }
 
         #nav-buttons button {
-            width: 100%;
+            width: 130px;
         }
     h1 {
         display: none; /* Nascondi titolo su mobile per risparmiare spazio */
@@ -190,7 +190,7 @@ footer {
         position: relative;
     }
     .dropdown-menu {
-        top: 50px;
+        top: -20px;
         bottom: auto;
         right: 100%;
         left: auto;

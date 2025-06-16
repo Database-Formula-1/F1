@@ -834,7 +834,7 @@ function mostraClassificaScuderie(gare, containerId) {
             </tr>`;
         });
 
-        html += `</tbody>></table>`;
+        html += `</tbody></table>`;
         container.innerHTML = `<div class="tabella-scroll-wrapper" style="margin-top:20px;">${html}</div>`;
 
         const headers = container.querySelectorAll('th[data-key]');

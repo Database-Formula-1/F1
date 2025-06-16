@@ -2382,7 +2382,7 @@ const gare2025 = [
       "nome": "Max Verstappen",
       "scuderia": "Red Bull",
       "q1": "1:12.054",
-      "q2": "1_:11.638",
+      "q2": "1:11.638",
       "q3": "1:11.059",
       "posizioneQualifica": 2,
       "posizioneFinale": 2,
