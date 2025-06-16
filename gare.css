@@ -123,6 +123,6 @@ main select {
     }
 
     .custom-select-container {
-        width: 100%; /* così ogni menu occupa tutta la larghezza */
+        width: 25%; /* così ogni menu occupa tutta la larghezza */
     }
 }
