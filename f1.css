@@ -146,9 +146,6 @@ footer {
         color: white;
     }
 
-
-
-
 /* RESPONSIVE */
 @media (max-width: 800px) {
     #menu-toggle {
@@ -164,6 +161,7 @@ footer {
         background-color: #202020;
         padding: 0.5rem;
         box-shadow: 0 0 12px #ff6666;
+        z-index: 1000;
     }
 
         #nav-buttons.show {

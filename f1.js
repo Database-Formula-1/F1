@@ -61,7 +61,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 subBtn.textContent = item.label;
                 subBtn.classList.add("dropdown-item");
                 subBtn.addEventListener("click", () => {
-                    item.action();
+                    clearMainAndRun(item.action); // chiude anche l’hamburger
                     dropdownMenu.classList.add("hidden");
                 });
                 dropdownMenu.appendChild(subBtn);

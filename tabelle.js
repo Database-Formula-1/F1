@@ -302,7 +302,7 @@ function mostraClassificaPiloti(gare, containerId) {
     let sortAsc = false; // default descending order
 
     // Funzione per colore rosso→bianco→verde
-    function colorScale(value) {
+    function colorScale(value, modalita = "verde") {
         if (value < 0) value = 0;
         if (value > 1) value = 1;
 
@@ -311,15 +311,23 @@ function mostraClassificaPiloti(gare, containerId) {
             const r = 255;
             const g = Math.round(255 * ratio);
             const b = Math.round(255 * ratio);
-            return `rgb(${r},${g},${b})`;
+            return `rgb(${r},${g},${b})`; // rosso → bianco
         } else {
             const ratio = (value - 0.5) / 0.5;
             const r = Math.round(255 * (1 - ratio));
-            const g = Math.round(255 - (127 * ratio));
-            const b = Math.round(255 * (1 - ratio));
+            const g = Math.round(255 - (127 * ratio)); // controlla il bianco → verde/blu
+            let b;
+            if (modalita === "verde") {
+                b = Math.round(255 * (1 - ratio)); // bianco → verde
+            } else if (modalita === "blu") {
+                b = Math.round(255 * ratio); // bianco → blu
+            } else {
+                b = Math.round(255 * (1 - ratio)); // default fallback
+            }
             return `rgb(${r},${g},${b})`;
         }
     }
+
 
     function renderTable() {
         // Ordina la classifica
@@ -353,7 +361,6 @@ function mostraClassificaPiloti(gare, containerId) {
             return 0;
         });
 
-        // Funzione per creare scaler normalizzatore per ogni colonna
         function creaScaler(data, key, inverti = false) {
             const valori = data.map(d => d[key]).filter(v => typeof v === 'number' && !isNaN(v));
             const min = Math.min(...valori);
@@ -365,8 +372,6 @@ function mostraClassificaPiloti(gare, containerId) {
             };
         }
 
-
-        // Creo normalizzatori per colonne da colorare (esempio: punti, punteggioOmni)
         const normalizzaPunti = creaScaler(classifica, 'punti');
         const normalizzaPunteggioOmni = creaScaler(classifica, 'punteggioOmni');
         const normalizzaPosizioneMediaFinale = creaScaler(
@@ -417,7 +422,8 @@ function mostraClassificaPiloti(gare, containerId) {
     <tbody>`;
 
         classifica.forEach((p, i) => {
-            // Calcolo colori per colonne specifiche
+            const colorePosizione = colorScale(1 - i / (classifica.length - 1), "blu");
+            const colori = pilotiColori[p.nome] || ["transparent", "transparent"];
             const colorePunti = colorScale(normalizzaPunti(p.punti));
             const colorePunteggioOmni = colorScale(normalizzaPunteggioOmni(p.punteggioOmni));
             const colorePosizioneMediaFinale = colorScale(normalizzaPosizioneMediaFinale(p.posizioneMediaFinale));
@@ -432,8 +438,8 @@ function mostraClassificaPiloti(gare, containerId) {
             const coloreDNF = colorScale(normalizzaDNF(p.dnfCount));
 
             html += `<tr>
-            <td>${i + 1}</td>
-            <td>${p.nome}</td>
+            <td style="box-shadow: inset 0 0 10px ${colorePosizione};">${i + 1}</td>
+            <td style="box-shadow: inset -5px -5px 8px ${colori[1]}, inset 5px 5px 8px ${colori[0]};">${p.nome}</td>
             <td style="box-shadow: inset 0 0 10px ${colorePunti};">${p.punti}</td>
             <td style="box-shadow: inset 0 0 10px ${colorePunteggioOmni};">${p.punteggioOmni.toFixed(2)}</td>
             <td style="box-shadow: inset 0 0 10px ${colorePosizioneMediaFinale};">${p.posizioneMediaFinale}</td>
@@ -449,10 +455,29 @@ function mostraClassificaPiloti(gare, containerId) {
         </tr>`;
         });
 
-        html += `</tbody></table>`;
+        html += `</tbody>
+    <tfoot>
+      <tr>
+        <th data-key="#">Pos</th>
+        <th data-key="nome">Pilota</th>
+        <th data-key="punti">Punti</th>
+        <th data-key="punteggioOmni">Punteggio</th>
+        <th data-key="posizioneMediaFinale">Posizione Gara</th>
+        <th data-key="posizioneMediaQualifica">Posizione Qualifica</th>
+        <th data-key="tempoMedioQualifica">Tempo Qualifica</th>
+        <th data-key="q3Count">Presenze Q3</th>
+        <th data-key="q2Count">Presenze Q2</th>
+        <th data-key="podi">Podi</th>
+        <th data-key="primeFileCount">Prime File</th>
+        <th data-key="giriVelociCount">Giri Veloci</th>
+        <th data-key="driverDayCount">Driver of the Day</th>
+        <th data-key="dnfCount">DNF</th>
+      </tr>
+    </tfoot>
+    </table>`;
+
         container.innerHTML = `<div class="tabella-scroll-wrapper">${html}</div>`;
 
-        // Event listener per ordinamento colonna
         const headers = container.querySelectorAll('th[data-key]');
         const ordDecrescenteIniziale = new Set(['punti', 'punteggioOmni', 'podi', 'giriVelociCount', 'primeFileCount', 'q3Count', 'q2Count', 'driverDayCount']);
         headers.forEach(header => {
@@ -470,7 +495,6 @@ function mostraClassificaPiloti(gare, containerId) {
             };
         });
     }
-
 
     renderTable();
 }
@@ -691,48 +715,87 @@ function mostraClassificaScuderie(gare, containerId) {
 
     const container = document.getElementById(containerId);
 
-    let sortKey = 'punti';  // default sort by punti
-    let sortAsc = false;    // default descending
+    let sortKey = 'punti';
+    let sortAsc = false;
+
+    // Funzione colore rosso→bianco→verde
+    function colorScale(value, modalita = "verde") {
+        if (value < 0) value = 0;
+        if (value > 1) value = 1;
+
+        if (value <= 0.5) {
+            const ratio = value / 0.5;
+            const r = 255;
+            const g = Math.round(255 * ratio);
+            const b = Math.round(255 * ratio);
+            return `rgb(${r},${g},${b})`; // rosso → bianco
+        } else {
+            const ratio = (value - 0.5) / 0.5;
+            const r = Math.round(255 * (1 - ratio));
+            const g = Math.round(255 - (127 * ratio)); // controlla il bianco → verde/blu
+            let b;
+            if (modalita === "verde") {
+                b = Math.round(255 * (1 - ratio)); // bianco → verde
+            } else if (modalita === "blu") {
+                b = Math.round(255 * ratio); // bianco → blu
+            } else {
+                b = Math.round(255 * (1 - ratio)); // default fallback
+            }
+            return `rgb(${r},${g},${b})`;
+        }
+    }
+
+    function creaScaler(data, key, inverti = false) {
+        const valori = data
+            .map(d => parseFloat(d[key]))
+            .filter(v => typeof v === 'number' && !isNaN(v));
+
+        const min = Math.min(...valori);
+        const max = Math.max(...valori);
+
+        return function (val) {
+            const numero = parseFloat(val);
+            if (isNaN(numero) || max === min) return 0;
+            let norm = (numero - min) / (max - min);
+            return inverti ? 1 - norm : norm;
+        };
+    }
+
 
     function renderTable() {
-        // Ordina la classifica
         classifica.sort((a, b) => {
             let valA = a[sortKey];
             let valB = b[sortKey];
 
-            if (sortKey === 'punteggioOmni') {
+            if (sortKey === 'tempoMedioQualifica') {
+                valA = tempoStrToSec(valA);
+                valB = tempoStrToSec(valB);
+            } else {
                 valA = parseFloat(valA) || 0;
                 valB = parseFloat(valB) || 0;
-            } else if (sortKey === 'tempoMedioQualifica') {
-                const toSec = s => {
-                    if (!s || s === '-') return Infinity;
-                    const parts = s.split(':');
-                    if (parts.length === 2) {
-                        const min = parseInt(parts[0], 10);
-                        const sec = parseFloat(parts[1]);
-                        if (isNaN(min) || isNaN(sec)) return Infinity;
-                        return min * 60 + sec;
-                    } else {
-                        const sec = parseFloat(s);
-                        return isNaN(sec) ? Infinity : sec;
-                    }
-                };
-                valA = toSec(valA);
-                valB = toSec(valB);
-            } else {
-                if (typeof valA === 'string' && !isNaN(parseFloat(valA))) valA = parseFloat(valA);
-                if (typeof valB === 'string' && !isNaN(parseFloat(valB))) valB = parseFloat(valB);
             }
 
-            if (valA < valB) return sortAsc ? -1 : 1;
-            if (valA > valB) return sortAsc ? 1 : -1;
-            return 0;
+            return sortAsc ? valA - valB : valB - valA;
         });
+
+        // Normalizzatori per colonne
+        const normPunti = creaScaler(classifica, 'punti');
+        const normPunteggioOmni = creaScaler(classifica, 'punteggioOmni');
+        const normPosMediaGara = creaScaler(classifica, 'posizioneMediaFinale', true);
+        const normPosMediaQualifica = creaScaler(classifica, 'posizioneMediaQualifica', true);
+        const normTempoQualifica = creaScaler(classifica.map(s => ({ ...s, tempoMedioQualifica: tempoStrToSec(s.tempoMedioQualifica) })), 'tempoMedioQualifica', true);
+        const normQ3 = creaScaler(classifica, 'q3Count');
+        const normQ2 = creaScaler(classifica, 'q2Count');
+        const normPodi = creaScaler(classifica, 'podi');
+        const normPrimeFile = creaScaler(classifica, 'primeFileCount');
+        const normGiriVeloci = creaScaler(classifica, 'giriVelociCount');
+        const normDriverDay = creaScaler(classifica, 'driverDayCount');
+        const normDNF = creaScaler(classifica, 'dnfCount', true);
 
         let html = `<table class="tabella-classifica">
         <thead>
             <tr>
-                <th data-key="#">#</th>
+                <th data-key="#">Pos</th>
                 <th data-key="scuderia">Scuderia</th>
                 <th data-key="punti">Punti</th>
                 <th data-key="punteggioOmni">Punteggio</th>
@@ -750,31 +813,32 @@ function mostraClassificaScuderie(gare, containerId) {
         </thead>
         <tbody>`;
 
-        classifica.forEach((s, index) => {
+        classifica.forEach((s, i) => {
+            const colorePosizione = colorScale(1 - i / (classifica.length - 1), "blu");
+            const colori = scuderiaColori[s.scuderia] || ["transparent", "transparent"];
             html += `<tr>
-                <td>${index + 1}</td>
-                <td>${s.scuderia}</td>
-                <td>${s.punti}</td>
-                <td>${s.punteggioOmni.toFixed(2)}</td>
-                <td>${s.posizioneMediaFinale}</td>
-                <td>${s.posizioneMediaQualifica}</td>
-                <td>${s.tempoMedioQualifica}</td>
-                <td>${s.q3Count}</td>
-                <td>${s.q2Count}</td>
-                <td>${s.podi}</td>
-                <td>${s.primeFileCount}</td>
-                <td>${s.giriVelociCount}</td>
-                <td>${s.driverDayCount}</td>
-                <td>${s.dnfCount}</td>
+                    <td style="box-shadow: inset 0 0 10px ${colorePosizione};">${i + 1}</td>
+                <td style="box-shadow: inset -5px -5px 10px ${colori[1]}, inset 5px 5px 10px ${colori[0]};">${s.scuderia}</td>
+                <td style="box-shadow: inset 0 0 10px ${colorScale(normPunti(s.punti))};">${s.punti}</td>
+                <td style="box-shadow: inset 0 0 10px ${colorScale(normPunteggioOmni(s.punteggioOmni))};">${s.punteggioOmni.toFixed(2)}</td>
+                <td style="box-shadow: inset 0 0 10px ${colorScale(normPosMediaGara(s.posizioneMediaFinale))};">${s.posizioneMediaFinale}</td>
+                <td style="box-shadow: inset 0 0 10px ${colorScale(normPosMediaQualifica(s.posizioneMediaQualifica))};">${s.posizioneMediaQualifica}</td>
+                <td style="box-shadow: inset 0 0 10px ${colorScale(normTempoQualifica(tempoStrToSec(s.tempoMedioQualifica)))};">${s.tempoMedioQualifica}</td>
+                <td style="box-shadow: inset 0 0 10px ${colorScale(normQ3(s.q3Count))};">${s.q3Count}</td>
+                <td style="box-shadow: inset 0 0 10px ${colorScale(normQ2(s.q2Count))};">${s.q2Count}</td>
+                <td style="box-shadow: inset 0 0 10px ${colorScale(normPodi(s.podi))};">${s.podi}</td>
+                <td style="box-shadow: inset 0 0 10px ${colorScale(normPrimeFile(s.primeFileCount))};">${s.primeFileCount}</td>
+                <td style="box-shadow: inset 0 0 10px ${colorScale(normGiriVeloci(s.giriVelociCount))};">${s.giriVelociCount}</td>
+                <td style="box-shadow: inset 0 0 10px ${colorScale(normDriverDay(s.driverDayCount))};">${s.driverDayCount}</td>
+                <td style="box-shadow: inset 0 0 10px ${colorScale(normDNF(s.dnfCount))};">${s.dnfCount}</td>
             </tr>`;
         });
 
-        html += `</tbody></table>`;
-        container.innerHTML = `<h2></h2><div class="tabella-scroll-wrapper" style="margin-top:20px;">${html}</div>`;
+        html += `</tbody>></table>`;
+        container.innerHTML = `<div class="tabella-scroll-wrapper" style="margin-top:20px;">${html}</div>`;
 
         const headers = container.querySelectorAll('th[data-key]');
-        const ordDecrescenteIniziale = new Set(['punti', 'punteggioOmni', 'podi', 'giriVelociCount', 'primeFileCount', 'q3Count', 'q2Count', 'driverDayCount',]);
-
+        const ordDecrescenteIniziale = new Set(['punti', 'punteggioOmni', 'podi', 'giriVelociCount', 'primeFileCount', 'q3Count', 'q2Count', 'driverDayCount']);
         headers.forEach(header => {
             header.style.cursor = 'pointer';
             header.onclick = () => {
@@ -784,7 +848,7 @@ function mostraClassificaScuderie(gare, containerId) {
                     sortAsc = !sortAsc;
                 } else {
                     sortKey = key;
-                    sortAsc = !ordDecrescenteIniziale.has(key); 
+                    sortAsc = !ordDecrescenteIniziale.has(key);
                 }
                 renderTable();
             };

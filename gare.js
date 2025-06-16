@@ -110,28 +110,31 @@ function mostraTabellaRiassuntiva(anno, modalita = "gara") {
     const tabella = document.createElement("table");
     tabella.classList.add("tabella-classifica");
 
+    // Funzione per creare intestazione
+    const creaIntestazione = () => {
+        const riga = document.createElement("tr");
+        riga.innerHTML = "<th>Pilota</th>";
+        gare.forEach(g => {
+            riga.innerHTML += `<th>${g.gara.slice(0, 3)}</th>`;
+        });
+        riga.innerHTML += modalita === "gara"
+            ? "<th>Punti Totali</th>"
+            : "<th>-</th>";
+        return riga;
+    };
+
+    // Thead
     const thead = document.createElement("thead");
-    const intestazione = document.createElement("tr");
-    intestazione.innerHTML = "<th>Pilota</th>";
-
-    gare.forEach(g => {
-        intestazione.innerHTML += `<th>${g.gara.slice(0, 3)}</th>`;
-    });
-
-    intestazione.innerHTML += modalita === "gara"
-        ? "<th>Punti Totali</th>"
-        : "<th>-</th>";
-
-    thead.appendChild(intestazione);
+    thead.appendChild(creaIntestazione());
     tabella.appendChild(thead);
 
+    // Tbody
     const tbody = document.createElement("tbody");
     [...pilotiMap.entries()]
         .sort((a, b) => {
             if (modalita === "gara") {
                 return b[1].puntiTotali - a[1].puntiTotali;
             } else {
-                // Media posizioni qualifiche (numeri ignorando valori non numerici)
                 const mediaA = Object.values(a[1].risultati)
                     .filter(v => typeof v === "number")
                     .reduce((acc, val) => acc + val, 0) / Object.values(a[1].risultati).filter(v => typeof v === "number").length || 0;
@@ -143,13 +146,17 @@ function mostraTabellaRiassuntiva(anno, modalita = "gara") {
         })
         .forEach(([nomePilota, dati]) => {
             const riga = document.createElement("tr");
-            riga.innerHTML = `<td>${nomePilota}</td>`;
+            const colori = pilotiColori[nomePilota] || ["transparent", "transparent"];
+            const cellaPilota = document.createElement("td");
+            cellaPilota.style.boxShadow = `inset -5px -5px 8px ${colori[1]}, inset 5px 5px 8px ${colori[0]}`;
+            cellaPilota.textContent = nomePilota;
+            riga.appendChild(cellaPilota);
+
 
             gare.forEach(g => {
                 const pos = dati.risultati[g.gara] || "-";
                 const cella = document.createElement("td");
 
-                // Aggiungi la classe giusta in base a posizione e modalità
                 const classe = getClassePosizione(pos, modalita);
                 if (classe) cella.classList.add(classe);
 
@@ -165,8 +172,15 @@ function mostraTabellaRiassuntiva(anno, modalita = "gara") {
         });
 
     tabella.appendChild(tbody);
+
+    // Tfoot identico al thead
+    const tfoot = document.createElement("tfoot");
+    tfoot.appendChild(creaIntestazione());
+    tabella.appendChild(tfoot);
+
     containerTabella.appendChild(tabella);
 }
+
 
 
 function mostraMenuGare() {

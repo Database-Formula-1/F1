@@ -15,7 +15,7 @@
         border-bottom: 1px solid #333;
     }
 
-    .tabella-classifica thead {
+    .tabella-classifica thead, .tabella-classifica tfoot {
         background-color: #ff0000;
         color: #fff;
     }

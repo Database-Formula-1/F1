@@ -73,7 +73,6 @@ main select {
     position: relative;
     user-select: none;
     width: 200px;
-    z-index: 10;
 }
 
 /* Parte visibile del menu */
@@ -120,12 +119,5 @@ main select {
     .container-select {
         flex-direction: column;
         gap: 0.5rem; /* magari meno spazio verticale */
-        align-items: stretch; /* fa sì che i menu occupino tutta la larghezza disponibile */
-        z-index: 10;
-    }
-
-    .custom-select-container {
-        width: 35%; /* così ogni menu occupa tutta la larghezza */
-        z-index: 10;
     }
 }
