@@ -2361,10 +2361,10 @@ const gare2025 = [
       "q2": "1:11.599",
       "q3": "1:11.625",
       "posizioneQualifica": 7,
-      "posizioneFinale": null,
+      "posizioneFinale": 18,
       "giroVeloce": false,
       "pilotaDelGiorno": false,
-      "dnf": true
+      "dnf": false
     },
     {
       "nome": "Oscar Piastri",
