@@ -4,7 +4,7 @@
 .custom-select-items div {
     font-size: 1rem;
     color: white;
-    font-size: 0.8rem; 
+    font-size: 0.8rem;
 }
 
 main select {
@@ -80,7 +80,7 @@ main select {
     color: white;
     padding: 0.5rem 1rem;
     border: 1px solid #999;
-    border-radius: 6px;
+    border-radius: 25px 5px 25px 5px;
     cursor: pointer;
 }
 
@@ -96,7 +96,7 @@ main select {
     z-index: 10;
     max-height: 200px;
     overflow-y: auto;
-    border-radius: 0 0 6px 6px;
+    border-radius: 25px 5px 25px 5px;
 }
 
     .custom-select-items div {
