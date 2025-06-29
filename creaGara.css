@@ -1,44 +1,152 @@
 ﻿#crea-gara-form {
     background: #1a1a1a;
     padding: 2rem;
-    color: #f1f1f1;
+    color: #f1f1f1; /* testo bianco chiaro */
     border-radius: 12px;
     box-shadow: 0 0 10px #ff0000aa;
+    font-family: Arial, sans-serif;
 }
 
     #crea-gara-form h2, #crea-gara-form h3 {
         color: #ff2d2d;
     }
 
+    /* Testo bianco per tutti i label dentro il form */
+    #crea-gara-form label {
+        color: #f1f1f1;
+    }
+
+    /* Stesso stile per Anno e Nome Gara fuori dai piloti */
+    #crea-gara-form > label {
+        display: inline-flex;
+        flex-direction: column;
+        font-size: 0.9rem;
+        color: #f1f1f1;
+        margin-right: 2rem;
+        margin-bottom: 1rem;
+        width: 180px;
+    }
+
+        #crea-gara-form > label input[type="text"],
+        #crea-gara-form > label input[type="number"] {
+            font-size: 0.9rem;
+            padding: 4px 8px;
+            height: 28px;
+            border: 1.5px solid #ff2d2d;
+            border-radius: 8px;
+            background-color: #222;
+            color: #f1f1f1; /* testo input bianco */
+            box-shadow: inset 0 0 6px rgba(255, 45, 45, 0.5);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            width: 100%;
+        }
+
+            #crea-gara-form > label input[type="text"]:focus,
+            #crea-gara-form > label input[type="number"]:focus {
+                border-color: #ff5555;
+                box-shadow: 0 0 8px #ff5555;
+                outline: none;
+            }
+
+#is-sprint-checkbox {
+    margin-left: 0.5rem;
+    transform: scale(1.1);
+    cursor: pointer;
+    filter: drop-shadow(0 0 1px #ff2d2d);
+    transition: filter 0.3s ease;
+    vertical-align: middle;
+}
+
+    #is-sprint-checkbox:hover {
+        filter: drop-shadow(0 0 3px #ff4444);
+    }
+
+    #is-sprint-checkbox:focus {
+        outline: 2px solid #ff2d2d;
+        outline-offset: 2px;
+    }
+
 label {
     margin-right: 2rem;
 }
-#is-sprint-checkbox{
-    margin-left: 2rem;
+.nome-gara-container {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-bottom: 1rem;
+    color: #f1f1f1;
 }
+
+    .nome-gara-container label {
+        cursor: pointer;
+        font-size: 0.9rem;
+    }
+
+    .nome-gara-container > label[for="nome-gara-input"] {
+        width: 180px;
+        display: inline-flex;
+        flex-direction: column;
+    }
+
+    .nome-gara-container input[type="text"] {
+        font-size: 0.9rem;
+        padding: 4px 8px;
+        height: 28px;
+        border: 1.5px solid #ff2d2d;
+        border-radius: 8px;
+        background-color: #222;
+        color: #f1f1f1;
+        box-shadow: inset 0 0 6px rgba(255, 45, 45, 0.5);
+        transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        width: 180px;
+    }
+
+        .nome-gara-container input[type="text"]:focus {
+            border-color: #ff5555;
+            box-shadow: 0 0 8px #ff5555;
+            outline: none;
+        }
+
+.sprint-label {
+    display: flex;
+    align-items: center;
+    font-size: 0.9rem;
+}
+
+    .sprint-label input[type="checkbox"] {
+        margin-right: 0.4rem;
+        transform: scale(1);
+        cursor: pointer;
+    }
+
+
+
+/* Pilota box e suoi campi */
 .pilota-box {
     margin-bottom: 1rem;
     padding: 0.1rem;
     background: #2a2a2a;
     border-left: 4px solid #ff4444;
     border-radius: 8px;
+    color: #f1f1f1;
 }
 
     .pilota-box fieldset {
         border: none;
         display: flex;
-        flex-wrap: nowrap; /* Non andare a capo */
+        flex-wrap: nowrap;
         gap: 0.5rem;
         align-items: center;
     }
 
     .pilota-box label {
-        flex: 0 0 auto; /* non si allunga, dimensione fissa */
+        flex: 0 0 auto;
         display: flex;
         flex-direction: column;
-        font-size: 0.8rem; /* un po' più piccolo */
-        width: 110px; /* larghezza fissa più stretta */
-        margin: 0; /* togli margini verticali */
+        font-size: 0.8rem;
+        width: 110px;
+        margin: 0;
+        color: #f1f1f1;
     }
 
         .pilota-box label input[type="text"],
@@ -46,22 +154,37 @@ label {
             font-size: 0.8rem;
             padding: 2px 5px;
             height: 24px;
+            background-color: #222;
+            border: 1px solid #ff4444;
+            border-radius: 5px;
+            color: #f1f1f1;
+            box-shadow: inset 0 0 4px rgba(255, 68, 68, 0.5);
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
         }
+
+            .pilota-box label input[type="text"]:focus,
+            .pilota-box label input[type="number"]:focus {
+                border-color: #ff6666;
+                box-shadow: 0 0 6px #ff6666;
+                outline: none;
+            }
 
         .pilota-box label input[type="checkbox"] {
             margin-right: 4px;
             transform: scale(0.9);
             vertical-align: middle;
+            cursor: pointer;
         }
 
-        .pilota-box label:nth-last-child(-n+3) { /* le 3 checkbox */
+        .pilota-box label:nth-last-child(-n+3) {
             flex-direction: row;
             align-items: center;
-            width: auto; /* larghezza automatica per le checkbox */
+            width: auto;
             font-size: 0.75rem;
+            color: #f1f1f1;
         }
 
-
+/* Pulsante */
 button#genera-json {
     background-color: #ff1e1e;
     color: white;
@@ -70,8 +193,14 @@ button#genera-json {
     border-radius: 8px;
     cursor: pointer;
     margin-top: 1rem;
+    font-weight: bold;
 }
 
+    button#genera-json:hover {
+        background-color: #ff4444;
+    }
+
+/* Output JSON */
 pre#output-json {
     background: #111;
     padding: 1rem;
@@ -80,18 +209,20 @@ pre#output-json {
     white-space: pre-wrap;
     max-height: 300px;
     overflow-y: auto;
+    color: #f1f1f1;
 }
 
+/* Media query per mobile */
 @media (max-width: 600px) {
     .pilota-box fieldset {
-        flex-wrap: wrap; /* ✅ consenti il ritorno a capo */
+        flex-wrap: wrap;
     }
 
     .pilota-box label {
-        width: 100%; /* ✅ ogni campo su riga propria */
+        width: 100%;
     }
 
         .pilota-box label:nth-last-child(-n+3) {
-            width: auto; /* le checkbox possono restare più compatte */
+            width: auto;
         }
 }

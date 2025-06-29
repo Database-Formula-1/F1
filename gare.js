@@ -62,6 +62,11 @@ function calcolaPunti(posizione) {
     const puntiF1 = [25, 18, 15, 12, 10, 8, 6, 4, 2, 1];
     return posizione >= 1 && posizione <= 10 ? puntiF1[posizione - 1] : 0;
 }
+function calcolaPuntiSprint(posizione) {
+    const puntiSprint = [8, 7, 6, 5, 4, 3, 2, 1];
+    return posizione >= 1 && posizione <= 8 ? puntiSprint[posizione - 1] : 0;
+}
+
 
 // Funzione per determinare la classe CSS in base alla posizione e modalità
 function getClassePosizione(posizione, modalita) {
@@ -104,16 +109,28 @@ function mostraTabellaRiassuntiva(anno, modalita = "gara") {
             let posizione;
             if (modalita === "gara") {
                 posizione = pilota.dnf ? "DNF" : pilota.posizioneFinale;
+
+                // Punti della gara
+                let puntiGara = 0;
+                let puntiSprint = 0;
+
                 if (!pilota.dnf && typeof pilota.posizioneFinale === "number") {
-                    datiPilota.puntiTotali += calcolaPunti(pilota.posizioneFinale);
+                    puntiGara = calcolaPunti(pilota.posizioneFinale);
                 }
+
+                if (typeof pilota.sprint === "number") {
+                    puntiSprint = calcolaPuntiSprint(pilota.sprint);
+                }
+
+                datiPilota.puntiTotali += puntiGara + puntiSprint;
+
             } else {
                 posizione = pilota.posizioneQualifica;
             }
-
             datiPilota.risultati[gara.gara] = posizione;
         });
     });
+
 
     const tabella = document.createElement("table");
     tabella.classList.add("tabella-classifica");
@@ -125,18 +142,26 @@ function mostraTabellaRiassuntiva(anno, modalita = "gara") {
         gare.forEach(g => {
             riga.innerHTML += `<th>${g.gara.slice(0, 3)}</th>`;
         });
-        riga.innerHTML += modalita === "gara"
-            ? "<th>Punti Totali</th>"
-            : "<th>-</th>";
+        // Solo in modalità gara aggiungi colonna punti totali
+        if (modalita === "gara") {
+            riga.innerHTML += "<th>Punti Totali</th>";
+        }
         return riga;
     };
+
 
     // Thead
     const thead = document.createElement("thead");
     thead.appendChild(creaIntestazione());
     tabella.appendChild(thead);
 
-    // Tbody
+    // Dopo aver popolato pilotiMap e prima di creare il tbody:
+    const puntiTotaliArray = [...pilotiMap.values()]
+        .map(p => p.puntiTotali)
+        .filter(p => typeof p === "number");
+
+    const scalerPuntiTotali = creaScaler(puntiTotaliArray, false);
+
     const tbody = document.createElement("tbody");
     [...pilotiMap.entries()]
         .sort((a, b) => {
@@ -160,7 +185,6 @@ function mostraTabellaRiassuntiva(anno, modalita = "gara") {
             cellaPilota.textContent = nomePilota;
             riga.appendChild(cellaPilota);
 
-
             gare.forEach(g => {
                 const pos = dati.risultati[g.gara] || "-";
                 const cella = document.createElement("td");
@@ -172,14 +196,28 @@ function mostraTabellaRiassuntiva(anno, modalita = "gara") {
                 riga.appendChild(cella);
             });
 
-            riga.innerHTML += modalita === "gara"
-                ? `<td><strong>${dati.puntiTotali}</strong></td>`
-                : `<td>-</td>`;
+            // Cella Punti Totali con colorazione
+            if (modalita === "gara") {
+                const tdPunti = document.createElement("td");
+                tdPunti.innerHTML = `<strong>${dati.puntiTotali}</strong>`;
 
+                if (typeof dati.puntiTotali === "number") {
+                    const norm = scalerPuntiTotali(dati.puntiTotali);
+                    const colore = colorScale(norm, "verde");
+                    tdPunti.style.backgroundColor = "transparent";
+                    tdPunti.style.boxShadow = `
+            inset -5px -5px 10px ${hexToRgba(colore, 0.7)},
+            inset 5px 5px 10px ${hexToRgba(colore, 0.3)}
+        `;
+                }
+
+                riga.appendChild(tdPunti);
+            }
             tbody.appendChild(riga);
         });
 
     tabella.appendChild(tbody);
+
 
     // Tfoot identico al thead
     const tfoot = document.createElement("tfoot");
@@ -378,7 +416,7 @@ function mostraDatiGara(gara) {
     // Crea thead
     const thead = document.createElement("thead");
     const headerRow = document.createElement("tr");
-    const colonne = ["Pilota", "Partenza", "Arrivo", "Q1", "Q2", "Q3"];
+    const colonne = ["Pilota", "Partenza", "Arrivo", "Q1", "Q2", "Q3", "Media Q"];
     colonne.forEach(testo => {
         const th = document.createElement("th");
         th.textContent = testo;
@@ -387,21 +425,43 @@ function mostraDatiGara(gara) {
     thead.appendChild(headerRow);
     tabella.appendChild(thead);
 
-    const keys = ["nome", "posizioneQualifica", "posizioneFinale", "q1", "q2", "q3"];
-    const colNumeriche = [1, 2, 3, 4, 5]; // colonne da colorare
+    const keys = ["nome", "posizioneQualifica", "posizioneFinale", "q1", "q2", "q3", "mediaQ"];
+    const colNumeriche = [1, 2, 3, 4, 5, 6]; // include anche Media Q
+
+    // Pre-calcolo le medie Q1+Q2+Q3 per ogni pilota
+    gara.piloti.forEach(pilota => {
+        const tempi = [pilota.q1, pilota.q2, pilota.q3];
+        const tempiValidi = tempi.map(tempoInMs).filter(t => !isNaN(t));
+        if (tempiValidi.length > 0) {
+            const media = Math.round(tempiValidi.reduce((a, b) => a + b, 0) / tempiValidi.length);
+            pilota.mediaQ = media;
+        } else {
+            pilota.mediaQ = null;
+        }
+    });
 
     // Creo gli scaler per ogni colonna numerica
     const scalerPerCol = {};
+    // Creazione scaler per ogni colonna numerica (inclusa mediaQ)
     colNumeriche.forEach(colIndex => {
         const key = keys[colIndex];
         let valoriDaScalare;
         if (["q1", "q2", "q3"].includes(key)) {
-            valoriDaScalare = gara.piloti.map(p => tempoInMs(p[key])).filter(v => !isNaN(v));
+            valoriDaScalare = gara.piloti
+                .map(p => tempoInMs(p[key]))
+                .filter(v => !isNaN(v));
+        } else if (key === "mediaQ") {
+            valoriDaScalare = gara.piloti
+                .map(p => p.mediaQ)
+                .filter(v => typeof v === "number" && !isNaN(v));
         } else {
-            valoriDaScalare = gara.piloti.map(p => p[key]).filter(v => typeof v === "number" && !isNaN(v));
+            valoriDaScalare = gara.piloti
+                .map(p => p[key])
+                .filter(v => typeof v === "number" && !isNaN(v));
         }
-        scalerPerCol[colIndex] = creaScaler(valoriDaScalare, true); // inverti per verde = migliore (minore)
+        scalerPerCol[colIndex] = creaScaler(valoriDaScalare, true);
     });
+
 
     // Crea tbody
     const tbody = document.createElement("tbody");
@@ -419,16 +479,24 @@ function mostraDatiGara(gara) {
         colNumeriche.forEach(colIndex => {
             const td = document.createElement("td");
             const key = keys[colIndex];
-            const val = pilota[key];
-            td.textContent = val;
+            let val = pilota[key];
+
+            // Visualizzazione tempo per mediaQ (da ms a "m:ss.sss")
+            if (key === "mediaQ" && typeof val === "number") {
+                const minuti = Math.floor(val / 60000);
+                const secondi = ((val % 60000) / 1000).toFixed(3).padStart(6, "0");
+                td.textContent = `${minuti}:${secondi}`;
+            } else {
+                td.textContent = val !== null && val !== undefined ? val : "-";
+            }
 
             if (val !== null && val !== undefined && val !== "") {
                 let normVal;
                 if (["q1", "q2", "q3"].includes(key)) {
                     const valMs = tempoInMs(val);
-                    if (!isNaN(valMs)) {
-                        normVal = scalerPerCol[colIndex](valMs);
-                    }
+                    if (!isNaN(valMs)) normVal = scalerPerCol[colIndex](valMs);
+                } else if (key === "mediaQ") {
+                    normVal = scalerPerCol[colIndex](val);
                 } else if (typeof val === "number" && !isNaN(val)) {
                     normVal = scalerPerCol[colIndex](val);
                 }
@@ -436,7 +504,6 @@ function mostraDatiGara(gara) {
                 if (normVal !== undefined) {
                     const coloreChiaro = colorScale(normVal, "verde");
                     td.style.backgroundColor = "transparent";
-
                     td.style.boxShadow = `
                 inset -5px -5px 10px ${hexToRgba(coloreChiaro, 0.7)},
                 inset 5px 5px 10px ${hexToRgba(coloreChiaro, 0.3)}
@@ -466,6 +533,7 @@ function mostraDatiGara(gara) {
     aggiungiOrdinamentoTabella(tabella);
     ordinaTabella(tabella, 2, true);
 }
+
 
 
 

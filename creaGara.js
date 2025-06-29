@@ -32,29 +32,31 @@ function creaFormGara() {
     const anno = new Date().getFullYear();
 
     form.innerHTML = `
-    <h2>📝 Crea nuova gara</h2>
+<h2>📝 Crea nuova gara</h2>
 
-    <label>Anno:
-        <input type="number" name="anno" value="${anno}" />
+<label>Anno:
+    <input type="number" name="anno" value="${anno}" />
+</label>
+
+<div class="nome-gara-container">
+    <label for="nome-gara-input">Nome Gara / Paese:</label>
+    <input id="nome-gara-input" type="text" name="nomeGara" placeholder="Es. Monaco" />
+
+    <label class="sprint-label" for="is-sprint-checkbox">
+        <input type="checkbox" id="is-sprint-checkbox" />
+        Gara Sprint
     </label>
+</div>
 
-    <label>Nome Gara / Paese:
-        <input type="text" name="nomeGara" placeholder="Es. GP Monaco" />
-        <label style="margin-left: 1rem;">
-            <input type="checkbox" id="is-sprint-checkbox" />
-            Gara Sprint
-        </label>
-    </label>
 
-    <h3>Piloti e risultati:</h3>
-    <div id="piloti-container"></div>
+<h3>Piloti e risultati:</h3>
+<div id="piloti-container"></div>
 
-    <button type="button" id="genera-json">📦 Genera JSON</button>
+<button type="button" id="genera-json">📦 Genera JSON</button>
 
-    <h3>Output:</h3>
-    <pre id="output-json">{ }</pre>
+<h3>Output:</h3>
+<pre id="output-json">{ }</pre>
 `;
-
 
     main.appendChild(form);
 
@@ -82,27 +84,27 @@ function creaFormGara() {
                 </label>
 
                 <label>Q1:
-                    <input type="text" class="q1" placeholder="1:30.123" />
+                    <input type="text" class="q1" placeholder="m:ss.000" />
                 </label>
 
                 <label>Q2:
-                    <input type="text" class="q2" placeholder="1:29.987" />
+                    <input type="text" class="q2" placeholder="m:ss.000" />
                 </label>
 
                 <label>Q3:
-                    <input type="text" class="q3" placeholder="1:29.456" />
+                    <input type="text" class="q3" placeholder="m:ss.000" />
                 </label>
 
-                <label>Posizione Qualifica:
+                <label>Qualifica:
                     <input type="number" class="pos-qualifica" />
                 </label>
 
-                <label>Posizione Finale:
+                <label>Gara:
                     <input type="number" class="pos-finale" />
                 </label>
 
                 ${includeSprint ? `
-                <label>Posizione Sprint:
+                <label>Sprint:
                     <input type="number" class="pos-sprint" />
                 </label>` : ""}
 
