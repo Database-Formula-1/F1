@@ -297,7 +297,7 @@ function generaClassificaOmnicomprensiva(piloti) {
     classificaOmni.sort((a, b) => a.punteggioOmni - b.punteggioOmni);
 
     // Inverto il punteggio per avere valore più alto = migliore
-    const maxPunteggio = classificaOmni[classificaOmni.length - 1].punteggioOmni;
+    const maxPunteggio = 193.2;
 
     classificaOmni = classificaOmni.map(p => ({
         ...p,
@@ -485,10 +485,11 @@ classifica.forEach((p, i) => {
     const diffOmni = p.diffPunteggioOmni || 0;
 
 const formatDiff = (diff, isPunti = false) => {
-  if (diff === 0) return isPunti ? '+0' : '';
+  if (diff === 0) return isPunti ? '+0' : '+0.0';
   if (diff > 0) return isPunti ? `+${Math.round(diff)}` : `+${diff.toFixed(1)}`;
   return isPunti ? `${Math.round(diff)}` : diff.toFixed(1);
 };
+
 
 function arrow(diff) {
     if (diff > 0) return ' <span style="color: green;">&#9650;</span>'; // freccia su verde
@@ -757,7 +758,7 @@ function generaClassificaOmnicomprensivaScuderie(scuderie) {
     classificaOmni.sort((a, b) => a.punteggioOmni - b.punteggioOmni);
 
     // Inverto il punteggio per avere valore più alto = migliore
-    const maxPunteggio = classificaOmni[classificaOmni.length - 1].punteggioOmni;
+    const maxPunteggio = 92;
 
     classificaOmni = classificaOmni.map(s => ({
         ...s,
