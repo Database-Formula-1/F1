@@ -70,8 +70,7 @@ function secToTempoStr(sec) {
 }
 
 
-// Genera la classifica piloti con tutte le statistiche richieste
-function generaClassificaPiloti(gare) {
+function generaClassificaPiloti(gare, finoAGara = null) {
     const puntiPerPosizione = {
         1: 25, 2: 18, 3: 15, 4: 12, 5: 10,
         6: 8, 7: 6, 8: 4, 9: 2, 10: 1,
@@ -84,6 +83,8 @@ function generaClassificaPiloti(gare) {
     const classifica = {};
 
     gare.forEach(gara => {
+        if (finoAGara !== null && gara.numeroGara > finoAGara) return;
+
         gara.piloti.forEach(pilota => {
             const nome = pilota.nome;
             if (!classifica[nome]) {
@@ -142,7 +143,7 @@ function generaClassificaPiloti(gare) {
 
             if (typeof pilota.sprint === "number") {
                 const puntiDaSprint = puntiSprint[pilota.sprint] || 0;
-                classifica[nome].punti += puntiDaSprint;
+                c.punti += puntiDaSprint;
             }
 
             if (pilota.giroVeloce) c.giriVelociCount++;
@@ -167,7 +168,37 @@ function generaClassificaPiloti(gare) {
         giriVelociCount: p.giriVelociCount,
         driverDayCount: p.driverDayCount,
         dnfCount: p.dnfCount
-    })).sort((a, b) => b.punti - a.punti);
+    }));
+}
+
+function differenzaPuntiUltimeDueGare(gare) {
+    const maxGara = Math.max(...gare.map(g => g.numeroGara));
+    if (maxGara < 2) {
+        // Se c'è solo una gara o meno, non ha senso calcolare la differenza
+        return {};
+    }
+
+    const classificaFinoN = generaClassificaPiloti(gare, maxGara);
+    const classificaFinoNMinus1 = generaClassificaPiloti(gare, maxGara - 1);
+
+    // Creiamo un oggetto per mappare i punti fino a gara n-1
+    const puntiFinoNMinus1 = {};
+    classificaFinoNMinus1.forEach(pilota => {
+        puntiFinoNMinus1[pilota.nome] = pilota.punti;
+    });
+
+    // Ora creiamo un array con la differenza punti (n - (n-1))
+    const differenze = classificaFinoN.map(pilota => {
+        const puntiPrecedenti = puntiFinoNMinus1[pilota.nome] || 0;
+        return {
+            nome: pilota.nome,
+            scuderia: pilota.scuderia,
+            puntiUltimaGara: pilota.punti - puntiPrecedenti,
+            puntiTotali: pilota.punti,
+        };
+    });
+
+    return differenze;
 }
 
 function generaClassificaOmnicomprensiva(piloti) {
@@ -282,17 +313,29 @@ function generaClassificaOmnicomprensiva(piloti) {
 
 // Crea la tabella HTML per la classifica piloti
 function mostraClassificaPiloti(gare, containerId) {
-    let classifica = generaClassificaPiloti(gare);
+    const maxGara = Math.max(...gare.map(g => g.numeroGara));
+    const classificaUltima = generaClassificaPiloti(gare, maxGara);
+    const classificaPenultima = generaClassificaPiloti(gare, maxGara - 1);
 
-    // Genera la classifica omnicomprensiva usando la funzione che hai scritto
-    const classificaOmni = generaClassificaOmnicomprensiva(classifica);
+    // Calcolo punteggio omni per entrambe
+    const classificaOmniUltima = generaClassificaOmnicomprensiva(classificaUltima);
+    const classificaOmniPenultima = generaClassificaOmnicomprensiva(classificaPenultima);
 
-    // Unisci i dati della classificaOmni con quelli originali basandoti sul nome
-    classifica = classifica.map(p => {
-        const omni = classificaOmni.find(o => o.nome === p.nome);
+    // Mappa per facile accesso
+    const penultimaMap = Object.fromEntries(classificaPenultima.map(p => [p.nome, p]));
+    const penultimaOmniMap = Object.fromEntries(classificaOmniPenultima.map(o => [o.nome, o]));
+
+    // Unisci e calcola differenze
+    let classifica = classificaUltima.map(p => {
+        const pPenultima = penultimaMap[p.nome] || { punti: 0 };
+        const omniUltima = classificaOmniUltima.find(o => o.nome === p.nome) || { punteggioOmni: 0 };
+        const omniPenultima = penultimaOmniMap[p.nome] || { punteggioOmni: 0 };
+
         return {
             ...p,
-            punteggioOmni: omni ? omni.punteggioOmni : Infinity
+            punteggioOmni: omniUltima.punteggioOmni,
+            diffPunti: p.punti - pPenultima.punti,
+            diffPunteggioOmni: omniUltima.punteggioOmni - omniPenultima.punteggioOmni,
         };
     });
 
@@ -421,39 +464,62 @@ function mostraClassificaPiloti(gare, containerId) {
     </thead>
     <tbody>`;
 
-        classifica.forEach((p, i) => {
-            const colorePosizione = colorScale(1 - i / (classifica.length - 1), "blu");
-            const colori = pilotiColori[p.nome] || ["transparent", "transparent"];
-            const colorePunti = colorScale(normalizzaPunti(p.punti));
-            const colorePunteggioOmni = colorScale(normalizzaPunteggioOmni(p.punteggioOmni));
-            const colorePosizioneMediaFinale = colorScale(normalizzaPosizioneMediaFinale(p.posizioneMediaFinale));
-            const colorePosizioneMediaQualifica = colorScale(normalizzaPosizioneMediaQualifica(p.posizioneMediaQualifica));
-            const coloreTempoMedioQualifica = colorScale(normalizzaTempoMedioQualifica(p.tempoMedioQualifica === '-' ? 0 : tempoStrToSec(p.tempoMedioQualifica)));
-            const coloreQ3 = colorScale(normalizzaQ3(p.q3Count));
-            const coloreQ2 = colorScale(normalizzaQ2(p.q2Count));
-            const colorePodi = colorScale(normalizzaPodi(p.podi));
-            const colorePrimeFile = colorScale(normalizzaprimeFile(p.primeFileCount));
-            const coloreGiriVeloci = colorScale(normalizzaGiriVeloci(p.giriVelociCount));
-            const coloreDriverDay = colorScale(normalizzaDriverDay(p.driverDayCount));
-            const coloreDNF = colorScale(normalizzaDNF(p.dnfCount));
+classifica.forEach((p, i) => {
+    const colorePosizione = colorScale(1 - i / (classifica.length - 1), "blu");
+    const colori = pilotiColori[p.nome] || ["transparent", "transparent"];
+    const colorePunti = colorScale(normalizzaPunti(p.punti));
+    const colorePunteggioOmni = colorScale(normalizzaPunteggioOmni(p.punteggioOmni));
+    const colorePosizioneMediaFinale = colorScale(normalizzaPosizioneMediaFinale(p.posizioneMediaFinale));
+    const colorePosizioneMediaQualifica = colorScale(normalizzaPosizioneMediaQualifica(p.posizioneMediaQualifica));
+    const coloreTempoMedioQualifica = colorScale(normalizzaTempoMedioQualifica(p.tempoMedioQualifica === '-' ? 0 : tempoStrToSec(p.tempoMedioQualifica)));
+    const coloreQ3 = colorScale(normalizzaQ3(p.q3Count));
+    const coloreQ2 = colorScale(normalizzaQ2(p.q2Count));
+    const colorePodi = colorScale(normalizzaPodi(p.podi));
+    const colorePrimeFile = colorScale(normalizzaprimeFile(p.primeFileCount));
+    const coloreGiriVeloci = colorScale(normalizzaGiriVeloci(p.giriVelociCount));
+    const coloreDriverDay = colorScale(normalizzaDriverDay(p.driverDayCount));
+    const coloreDNF = colorScale(normalizzaDNF(p.dnfCount));
 
-            html += `<tr>
-            <td style="box-shadow: inset 0 0 10px ${colorePosizione};">${i + 1}</td>
-            <td style="box-shadow: inset -5px -5px 8px ${colori[1]}, inset 5px 5px 8px ${colori[0]};">${p.nome}</td>
-            <td style="box-shadow: inset 0 0 10px ${colorePunti};">${p.punti}</td>
-            <td style="box-shadow: inset 0 0 10px ${colorePunteggioOmni};">${p.punteggioOmni.toFixed(2)}</td>
-            <td style="box-shadow: inset 0 0 10px ${colorePosizioneMediaFinale};">${p.posizioneMediaFinale}</td>
-            <td style="box-shadow: inset 0 0 10px ${colorePosizioneMediaQualifica};">${p.posizioneMediaQualifica}</td>
-            <td style="box-shadow: inset 0 0 10px ${coloreTempoMedioQualifica};">${p.tempoMedioQualifica}</td>
-            <td style="box-shadow: inset 0 0 10px ${coloreQ3};">${p.q3Count}</td>
-            <td style="box-shadow: inset 0 0 10px ${coloreQ2};">${p.q2Count}</td>
-            <td style="box-shadow: inset 0 0 10px ${colorePodi};">${p.podi}</td>
-            <td style="box-shadow: inset 0 0 10px ${colorePrimeFile};">${p.primeFileCount}</td>
-            <td style="box-shadow: inset 0 0 10px ${coloreGiriVeloci};">${p.giriVelociCount}</td>
-            <td style="box-shadow: inset 0 0 10px ${coloreDriverDay};">${p.driverDayCount}</td>
-            <td style="box-shadow: inset 0 0 10px ${coloreDNF};">${p.dnfCount}</td>
-        </tr>`;
-        });
+    // Calcolo differenze rispetto al pilota sopra (se esiste)
+    const diffPunti = i > 0 ? p.punti - classifica[i - 1].punti : 0;
+    const diffOmni = p.diffPunteggioOmni || 0;
+
+const formatDiff = (diff, isPunti = false) => {
+  if (diff === 0) return isPunti ? '+0' : '';
+  if (diff > 0) return isPunti ? `+${Math.round(diff)}` : `+${diff.toFixed(1)}`;
+  return isPunti ? `${Math.round(diff)}` : diff.toFixed(1);
+};
+
+function arrow(diff) {
+    if (diff > 0) return ' <span style="color: green;">&#9650;</span>'; // freccia su verde
+    if (diff < 0) return ' <span style="color: red;">&#9660;</span>';   // freccia giù rossa
+    return '';
+}
+
+
+html += `<tr>
+    <td style="box-shadow: inset 0 0 10px ${colorePosizione};">${i + 1}</td>
+    <td style="box-shadow: inset -5px -5px 8px ${colori[1]}, inset 5px 5px 8px ${colori[0]};">${p.nome}</td>
+    <td style="box-shadow: inset 0 0 10px ${colorePunti};">
+        ${p.punti} <span style="font-size: smaller; color: gray;">${formatDiff(p.diffPunti, true)}</span>
+    </td>
+    <td style="box-shadow: inset 0 0 10px ${colorePunteggioOmni};">
+        ${p.punteggioOmni.toFixed(2)} <span style="font-size: smaller; color: gray;">${formatDiff(diffOmni)}${arrow(diffOmni)}</span>
+    </td>
+    <td style="box-shadow: inset 0 0 10px ${colorePosizioneMediaFinale};">${p.posizioneMediaFinale}</td>
+    <td style="box-shadow: inset 0 0 10px ${colorePosizioneMediaQualifica};">${p.posizioneMediaQualifica}</td>
+    <td style="box-shadow: inset 0 0 10px ${coloreTempoMedioQualifica};">${p.tempoMedioQualifica}</td>
+    <td style="box-shadow: inset 0 0 10px ${coloreQ3};">${p.q3Count}</td>
+    <td style="box-shadow: inset 0 0 10px ${coloreQ2};">${p.q2Count}</td>
+    <td style="box-shadow: inset 0 0 10px ${colorePodi};">${p.podi}</td>
+    <td style="box-shadow: inset 0 0 10px ${colorePrimeFile};">${p.primeFileCount}</td>
+    <td style="box-shadow: inset 0 0 10px ${coloreGiriVeloci};">${p.giriVelociCount}</td>
+    <td style="box-shadow: inset 0 0 10px ${coloreDriverDay};">${p.driverDayCount}</td>
+    <td style="box-shadow: inset 0 0 10px ${coloreDNF};">${p.dnfCount}</td>
+</tr>`;
+
+});
+
 
         html += `</tbody>
     <tfoot>
@@ -498,7 +564,6 @@ function mostraClassificaPiloti(gare, containerId) {
 
     renderTable();
 }
-
 
 function generaClassificaScuderie(gare) {
     const puntiPerPosizione = {
