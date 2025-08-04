@@ -3137,6 +3137,7 @@ const gare2025 = [
   ]
 },
 {
+  "numeroGara": 13,
   "anno": 2025,
   "gara": "Belgio",
   "piloti": [
@@ -3416,3 +3417,4 @@ const gare2025 = [
     
 
 ];
+
