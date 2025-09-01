@@ -690,7 +690,7 @@ function generaClassificaOmnicomprensivaScuderie(scuderie) {
     // Metriche discrete con rango speciale
     const discreteMetrics = new Set([
         'q3Count', 'q2Count', 'driverDayCount',
-        'giriVelociCount', 'dnfCount', 'primeFileCount', 'podi'
+        'giriVelociCount', 'primeFileCount', 'podi'
     ]);
 
     const ranghiPerMetrica = {};
@@ -924,3 +924,4 @@ function mostraClassificaScuderie(gare, containerId) {
     renderTable();
 
 }
+
