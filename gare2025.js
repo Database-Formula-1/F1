@@ -3675,7 +3675,7 @@ const gare2025 = [
 },
 {
   "anno": 2025,
-    "numeroGara": 15,
+  "numeroGara": 15,
   "gara": "Olanda",
   "piloti": [
     {
@@ -3685,7 +3685,7 @@ const gare2025 = [
       "q2": "1:08.874",
       "q3": "1:08.674",
       "posizioneQualifica": 2,
-      "posizioneFinale": null,
+      "posizioneFinale": 18,
       "giroVeloce": false,
       "pilotaDelGiorno": false,
       "dnf": true
@@ -3934,6 +3934,7 @@ const gare2025 = [
 },
     
 ];
+
 
 
 
