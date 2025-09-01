@@ -3673,7 +3673,267 @@ const gare2025 = [
     }
   ]
 },
-
+{
+  "anno": 2025,
+    "numeroGara": 15,
+  "gara": "Olanda",
+  "piloti": [
+    {
+      "nome": "Lando Norris",
+      "scuderia": "McLaren",
+      "q1": "1:09.469",
+      "q2": "1:08.874",
+      "q3": "1:08.674",
+      "posizioneQualifica": 2,
+      "posizioneFinale": 18,
+      "giroVeloce": false,
+      "pilotaDelGiorno": false,
+      "dnf": true
+    },
+    {
+      "nome": "Oscar Piastri",
+      "scuderia": "McLaren",
+      "q1": "1:09.338",
+      "q2": "1:08.964",
+      "q3": "1:08.662",
+      "posizioneQualifica": 1,
+      "posizioneFinale": 1,
+      "giroVeloce": true,
+      "pilotaDelGiorno": false,
+      "dnf": false
+    },
+    {
+      "nome": "Max Verstappen",
+      "scuderia": "Red Bull",
+      "q1": "1:09.696",
+      "q2": "1:09.122",
+      "q3": "1:08.925",
+      "posizioneQualifica": 3,
+      "posizioneFinale": 2,
+      "giroVeloce": false,
+      "pilotaDelGiorno": false,
+      "dnf": false
+    },
+    {
+      "nome": "Yuki Tsunoda",
+      "scuderia": "Red Bull",
+      "q1": "1:09.954",
+      "q2": "1:09.622",
+      "q3": "",
+      "posizioneQualifica": 12,
+      "posizioneFinale": 9,
+      "giroVeloce": false,
+      "pilotaDelGiorno": false,
+      "dnf": false
+    },
+    {
+      "nome": "Charles Leclerc",
+      "scuderia": "Ferrari",
+      "q1": "1:09.906",
+      "q2": "1:09.304",
+      "q3": "1:09.340",
+      "posizioneQualifica": 6,
+      "posizioneFinale": null,
+      "giroVeloce": false,
+      "pilotaDelGiorno": false,
+      "dnf": true
+    },
+    {
+      "nome": "Lewis Hamilton",
+      "scuderia": "Ferrari",
+      "q1": "1:09.900",
+      "q2": "1:09.261",
+      "q3": "1:09.390",
+      "posizioneQualifica": 7,
+      "posizioneFinale": null,
+      "giroVeloce": false,
+      "pilotaDelGiorno": false,
+      "dnf": true
+    },
+    {
+      "nome": "George Russell",
+      "scuderia": "Mercedes",
+      "q1": "1:09.676",
+      "q2": "1:09.313",
+      "q3": "1:09.255",
+      "posizioneQualifica": 5,
+      "posizioneFinale": 4,
+      "giroVeloce": false,
+      "pilotaDelGiorno": false,
+      "dnf": false
+    },
+    {
+      "nome": "Kimi Antonelli",
+      "scuderia": "Mercedes",
+      "q1": "1:09.845",
+      "q2": "1:09.493",
+      "q3": "",
+      "posizioneQualifica": 11,
+      "posizioneFinale": 16,
+      "giroVeloce": false,
+      "pilotaDelGiorno": false,
+      "dnf": false
+    },
+    {
+      "nome": "Alexander Albon",
+      "scuderia": "Williams",
+      "q1": "1:09.792",
+      "q2": "1:09.652",
+      "q3": "",
+      "posizioneQualifica": 15,
+      "posizioneFinale": 5,
+      "giroVeloce": false,
+      "pilotaDelGiorno": false,
+      "dnf": false
+    },
+    {
+      "nome": "Carlos Sainz",
+      "scuderia": "Williams",
+      "q1": "1:09.980",
+      "q2": "1:09.472",
+      "q3": "1:09.505",
+      "posizioneQualifica": 9,
+      "posizioneFinale": 13,
+      "giroVeloce": false,
+      "pilotaDelGiorno": false,
+      "dnf": false
+    },
+    {
+      "nome": "Isack Hadjar",
+      "scuderia": "Racing Bulls",
+      "q1": "1:09.966",
+      "q2": "1:09.439",
+      "q3": "1:09.208",
+      "posizioneQualifica": 4,
+      "posizioneFinale": 3,
+      "giroVeloce": false,
+      "pilotaDelGiorno": true,
+      "dnf": false
+    },
+    {
+      "nome": "Liam Lawson",
+      "scuderia": "Racing Bulls",
+      "q1": "1:09.779",
+      "q2": "1:09.383",
+      "q3": "1:09.500",
+      "posizioneQualifica": 8,
+      "posizioneFinale": 12,
+      "giroVeloce": false,
+      "pilotaDelGiorno": false,
+      "dnf": false
+    },
+    {
+      "nome": "Esteban Ocon",
+      "scuderia": "Haas",
+      "q1": "1:10.197",
+      "q2": "",
+      "q3": "",
+      "posizioneQualifica": 18,
+      "posizioneFinale": 10,
+      "giroVeloce": false,
+      "pilotaDelGiorno": false,
+      "dnf": false
+    },
+    {
+      "nome": "Oliver Bearman",
+      "scuderia": "Haas",
+      "q1": "1:10.262",
+      "q2": "",
+      "q3": "",
+      "posizioneQualifica": 19,
+      "posizioneFinale": 6,
+      "giroVeloce": false,
+      "pilotaDelGiorno": false,
+      "dnf": false
+    },
+    {
+      "nome": "Niko Hulkenberg",
+      "scuderia": "Sauber",
+      "q1": "1:10.195",
+      "q2": "",
+      "q3": "",
+      "posizioneQualifica": 17,
+      "posizioneFinale": 14,
+      "giroVeloce": false,
+      "pilotaDelGiorno": false,
+      "dnf": false
+    },
+    {
+      "nome": "Gabriel Bortoleto",
+      "scuderia": "Sauber",
+      "q1": "1:10.037",
+      "q2": "1:09.622",
+      "q3": "",
+      "posizioneQualifica": 13,
+      "posizioneFinale": 15,
+      "giroVeloce": false,
+      "pilotaDelGiorno": false,
+      "dnf": false
+    },
+    {
+      "nome": "Fernando Alonso",
+      "scuderia": "Aston Martin",
+      "q1": "1:09.950",
+      "q2": "1:09.366",
+      "q3": "1:09.630",
+      "posizioneQualifica": 10,
+      "posizioneFinale": 8,
+      "giroVeloce": false,
+      "pilotaDelGiorno": false,
+      "dnf": false
+    },
+    {
+      "nome": "Lance Stroll",
+      "scuderia": "Aston Martin",
+      "q1": "1:10.262",
+      "q2": "",
+      "q3": "",
+      "posizioneQualifica": null,
+      "posizioneFinale": 7,
+      "giroVeloce": false,
+      "pilotaDelGiorno": false,
+      "dnf": false
+    },
+    {
+      "nome": "Pierre Gasly",
+      "scuderia": "Alpine",
+      "q1": "1:09.894",
+      "q2": "1:09.637",
+      "q3": "",
+      "posizioneQualifica": 14,
+      "posizioneFinale": 17,
+      "giroVeloce": false,
+      "pilotaDelGiorno": false,
+      "dnf": false
+    },
+    {
+      "nome": "Franco Colapinto",
+      "scuderia": "Alpine",
+      "q1": "1:10.104",
+      "q2": "",
+      "q3": "",
+      "posizioneQualifica": 16,
+      "posizioneFinale": 11,
+      "giroVeloce": false,
+      "pilotaDelGiorno": false,
+      "dnf": false
+    },
+    {
+      "nome": "Jack Doohan",
+      "scuderia": "Alpine",
+      "q1": "1:10.104",
+      "q2": "",
+      "q3": "",
+      "posizioneQualifica": null,
+      "posizioneFinale": null,
+      "giroVeloce": false,
+      "pilotaDelGiorno": false,
+      "dnf": false
+    }
+  ]
+},
+    
 ];
+
 
 
